@@ -1,0 +1,258 @@
+---
+title: "Chapter 5"
+author: "Hong Chang"
+date: "2025-03-26"
+output: html_document
+---
+
+# 使用LLM辅助R语言编程基础
+
+事前准备：
+大语言模型，示例：[通义千问](https://tongyi.aliyun.com/)
+
+
+大语言模型的Prompt通常是下面的结构
+
+1. （可选）定义身份：你是一名专业的数据科学家，我是零代码基础的用户。
+2. 定义任务：我将提供给你一份CSV格式的数据集（文件名：第二章.csv），数据集使用了GBK编码，请你使用R语言代码读取数据，这段代码能够【......】，并以较美观的方式输出。由于我是零代码基础的用户，你应当使用尽可能容易理解的代码，尽量避免引入不必要的包，代码应当有详细的注释。
+3. （可选）示例输入：（这个案例中我们不需要提供输入定义）
+4. （可选）示例输出：你的结果应当以Code Block的形式输出，无需其他输出（并尝试处理csv中的数据，输出结果，方便我查看）。
+
+
+# 任务一：数据读入
+**输入PROMPT**：你是一名专业的数据科学家，我是零代码基础的用户。我将提供给你一份CSV格式的数据集（文件名：第5章.csv），数据集使用了GBK编码，请你使用R语言代码读取数据，并根据csv第一行的变量名们，为我解释这些变量的含义。
+**LLM输出**
+
+```{r}
+library(readr)
+data=read.csv("第5章.csv", fileEncoding = "gbk")
+head(data)
+```
+
+### 根据这些变量名，可以为你解释它们可能的含义。这些变量通常与在线广告或数字营销相关，以下是每个变量的具体解释：
+
+#### 1. keyword
+含义：广告投放时所使用的搜索关键词。例如，如果你在搜索引擎上购买了“运动鞋”这个关键词，那么当用户搜索“运动鞋”时，你的广告可能会被展示。
+
+#### 2. impression
+中文翻译：展示量
+含义：广告被展示给用户的次数。即使用户没有点击广告，只要广告出现在用户的屏幕上，就算一次展示。
+
+#### 3. click
+中文翻译：点击量
+含义：用户实际点击广告的次数。每次用户点击广告并跳转到目标页面，就会计为一次点击。
+
+#### 4. cost
+含义：广告投放所花费的金额。
+
+#### 5. ranking
+含义：广告在搜索结果或广告位中的排名位置。例如，排名第一的广告通常会出现在搜索结果的最上方。
+
+#### 6. conversion
+含义：广告带来的实际效果，例如用户完成了一次购买、注册、下载等行为。
+
+### 总结
+这些变量共同描述了一个典型的在线广告投放数据集，涵盖了从广告展示、点击、花费到最终转化的全过程。以下是一些常见的分析方向：
+点击率（CTR）：click / impression，表示广告的吸引力。
+转化率（CVR）：conversion / click，表示点击后转化为实际行为的比例。
+单次点击成本（CPC）：cost / click，表示每次点击需要花费多少钱。
+单次转化成本（CPA）：cost / conversion，表示每次转化需要花费多少钱。
+
+# 任务二：变量处理
+
+**输入PROMPT**：你是一名专业的数据科学家，我是零代码基础的用户。csv文件中的keyword变量是字符型变量，请你实现利用R语言，增加一列变量刻画keyword的长度，以及实现对keyword的分词，你的结果应当以Code Block的形式输出。
+
+```{r}
+# 加载必要的包
+# 如果没有安装这些包，请先运行 install.packages("包名")
+library(jiebaR) # 用于中文分词
+
+# 1. 增加一列，刻画keyword的长度
+data$keyword_length <- nchar(data$keyword)
+
+# 2. 初始化分词器（使用jiebaR包）
+cutter <- worker()
+# 对keyword列进行分词
+data$keyword_segmented <- sapply(data$keyword, function(x) {
+  paste(cutter[x], collapse = " ")
+})
+# 查看结果
+head(data)
+
+```
+
+
+**输入PROMPT**：你是一名专业的数据科学家，我是零代码基础的用户。csv文件中的keyword变量是字符型变量，请你实现利用R语言，将其转化为几种类别型变量。例如：新增加一类“ticket”变量,取值为“其他”，"飞机票"，"机票"，"航班"。分类的依据为：若某个样本的keyword包含有“飞机票”字段，则其ticket变量取值为“飞机票”。且注意“飞机票”与“机票”两个类别有重合的部分，请仔细编写，防止错误赋值，你的结果应当以Code Block的形式输出。
+
+**LLM输出**
+
+```{r}
+library(dplyr)
+# 定义分类规则：新增“ticket”变量
+data <- data %>%
+  mutate(ticket = case_when(
+    grepl("飞机票", keyword) ~ "飞机票",  # 如果keyword包含“飞机票”，优先归为“飞机票”
+    grepl("机票", keyword) ~ "机票",      # 如果keyword包含“机票”，但不包含“飞机票”，归为“机票”
+    grepl("航班", keyword) ~ "航班",      # 如果keyword包含“航班”，归为“航班"
+    TRUE ~ "其他"                        # 其他情况归为“其他”
+  ))
+
+# 查看结果
+head(data)
+
+```
+
+**输入PROMPT**：
+请按照上述流程类似增加以下几类变量：
+1.price："特价","便宜","打折","折扣","低价","廉价","特惠","最",“其他”
+2.buy："定","订","购","买","查询","多少钱","价格","哪个","时刻表",“其他”
+3.city1："北京","上海","广州","深圳",“其他”
+3.city2："三亚","厦门","南京","昆明","哈尔滨","天津","长沙","武汉","海口","重庆","大连",
+         "乌鲁木齐" ,"杭州","成都","西安","郑州","济南","呼和浩特","长春","南昌",“其他”
+4.brand："携程","途牛","去哪儿","艺龙","同程","酷讯",“其他”
+你的结果应当以Code Block的形式输出，并通过注释告诉我如何解读结果。
+
+**LLM输出**
+
+```{r}
+# 定义分类规则：新增“price”变量
+data <- data %>%
+  mutate(price = case_when(
+    grepl("特价", keyword, ignore.case = TRUE) ~ "特价",
+    grepl("便宜", keyword, ignore.case = TRUE) ~ "便宜",
+    grepl("打折", keyword, ignore.case = TRUE) ~ "打折",
+    grepl("折扣", keyword, ignore.case = TRUE) ~ "折扣",
+    grepl("低价", keyword, ignore.case = TRUE) ~ "低价",
+    grepl("廉价", keyword, ignore.case = TRUE) ~ "廉价",
+    grepl("特惠", keyword, ignore.case = TRUE) ~ "特惠",
+    grepl("最", keyword, ignore.case = TRUE) ~ "最",
+    TRUE ~ "其他"
+  ))
+
+# 定义分类规则：新增“buy”变量
+data <- data %>%
+  mutate(buy = case_when(
+    grepl("定", keyword, ignore.case = TRUE) ~ "定",
+    grepl("订", keyword, ignore.case = TRUE) ~ "订",
+    grepl("购", keyword, ignore.case = TRUE) ~ "购",
+    grepl("买", keyword, ignore.case = TRUE) ~ "买",
+    grepl("查询", keyword, ignore.case = TRUE) ~ "查询",
+    grepl("多少钱", keyword, ignore.case = TRUE) ~ "多少钱",
+    grepl("价格", keyword, ignore.case = TRUE) ~ "价格",
+    grepl("哪个", keyword, ignore.case = TRUE) ~ "哪个",
+    grepl("时刻表", keyword, ignore.case = TRUE) ~ "时刻表",
+    TRUE ~ "其他"
+  ))
+
+# 定义分类规则：新增“city1”变量
+data <- data %>%
+  mutate(city1 = case_when(
+    grepl("北京", keyword, ignore.case = TRUE) ~ "北京",
+    grepl("上海", keyword, ignore.case = TRUE) ~ "上海",
+    grepl("广州", keyword, ignore.case = TRUE) ~ "广州",
+    grepl("深圳", keyword, ignore.case = TRUE) ~ "深圳",
+    TRUE ~ "其他"
+  ))
+
+# 定义分类规则：新增“city2”变量
+data <- data %>%
+  mutate(city2 = case_when(
+    grepl("三亚", keyword, ignore.case = TRUE) ~ "三亚",
+    grepl("厦门", keyword, ignore.case = TRUE) ~ "厦门",
+    grepl("南京", keyword, ignore.case = TRUE) ~ "南京",
+    grepl("昆明", keyword, ignore.case = TRUE) ~ "昆明",
+    grepl("哈尔滨", keyword, ignore.case = TRUE) ~ "哈尔滨",
+    grepl("天津", keyword, ignore.case = TRUE) ~ "天津",
+    grepl("长沙", keyword, ignore.case = TRUE) ~ "长沙",
+    grepl("武汉", keyword, ignore.case = TRUE) ~ "武汉",
+    grepl("海口", keyword, ignore.case = TRUE) ~ "海口",
+    grepl("重庆", keyword, ignore.case = TRUE) ~ "重庆",
+    grepl("大连", keyword, ignore.case = TRUE) ~ "大连",
+    grepl("乌鲁木齐", keyword, ignore.case = TRUE) ~ "乌鲁木齐",
+    grepl("杭州", keyword, ignore.case = TRUE) ~ "杭州",
+    grepl("成都", keyword, ignore.case = TRUE) ~ "成都",
+    grepl("西安", keyword, ignore.case = TRUE) ~ "西安",
+    grepl("郑州", keyword, ignore.case = TRUE) ~ "郑州",
+    grepl("济南", keyword, ignore.case = TRUE) ~ "济南",
+    grepl("呼和浩特", keyword, ignore.case = TRUE) ~ "呼和浩特",
+    grepl("长春", keyword, ignore.case = TRUE) ~ "长春",
+    grepl("南昌", keyword, ignore.case = TRUE) ~ "南昌",
+    TRUE ~ "其他"
+  ))
+
+# 定义分类规则：新增“brand”变量
+data <- data %>%
+  mutate(brand = case_when(
+    grepl("携程", keyword, ignore.case = TRUE) ~ "携程",
+    grepl("途牛", keyword, ignore.case = TRUE) ~ "途牛",
+    grepl("去哪儿", keyword, ignore.case = TRUE) ~ "去哪儿",
+    grepl("艺龙", keyword, ignore.case = TRUE) ~ "艺龙",
+    grepl("同程", keyword, ignore.case = TRUE) ~ "同程",
+    grepl("酷讯", keyword, ignore.case = TRUE) ~ "酷讯",
+    TRUE ~ "其他"
+  ))
+
+# 查看结果
+head(data)
+```
+
+
+# 任务三：泊松回归
+**输入PROMPT**：请根据变量conversion创建一个新的因变量Y，其取值当conversion=0和1时为0，其他情况为conversion-1，你的结果应当以Code Block的形式输出。
+
+**LLM输出**
+
+```{r}
+# 创建新的因变量 Y
+data <- data %>%
+  mutate(Y = case_when(
+    conversion == 0 | conversion == 1 ~ 0,  # 当 conversion 为 0 或 1 时，Y 取值为 0
+    TRUE ~ conversion - 1                   # 其他情况下，Y 取值为 conversion - 1
+  ))
+
+# 查看结果
+head(data)
+```
+
+**输入PROMPT**：请以Y为因变量，以log(impression)，CTR，CPC，ranking，kwlen，ticket，price，buy，city1，city2，brand为自变量进行泊松回归，并输出模型结果，并进行卡方检验，并说明如何解读模型参数以及检验效果。
+
+**LLM输出**
+
+```{r}
+# 加载必要的包
+library(stats) # 泊松回归和卡方检验
+
+# 计算CTR（点击率）和CPC（单次点击成本）
+data <- data %>%
+  mutate(
+    CTR = ifelse(impression == 0, 0, click / impression), # 点击率 = 点击量 / 展示量
+    CPC = ifelse(click == 0, 0, cost / click)              # 单次点击成本 = 花费 / 点击量
+  )
+
+
+# 将分类变量转换为因子类型
+data <- data %>%
+  mutate(
+    ticket = as.factor(ticket),
+    price = as.factor(price),
+    buy = as.factor(buy),
+    city1 = as.factor(city1),
+    city2 = as.factor(city2),
+    brand = as.factor(brand)
+  )
+
+# 拟合泊松回归模型
+poisson_model <- glm(
+  formula = Y ~ log(impression) + CTR + CPC + ranking + keyword_length + ticket + price + buy + city1 + city2 + brand,
+  data = data,
+  family = poisson(link = "log")
+)
+
+# 输出模型结果
+summary(poisson_model)
+
+# 进行卡方检验（比较泊松回归模型与空模型的拟合优度）
+null_model <- glm(Y ~ 1, data = data, family = poisson(link = "log")) # 空模型
+chi_square_test <- anova(null_model, poisson_model, test = "Chisq")  # 卡方检验
+print(chi_square_test)
+```
