@@ -19,7 +19,7 @@
 > ⚠️ **重要提示**：仓库中的 `.csv` 文件均为**空白占位文件**，仅用于展示数据结构。运行代码前，请务必从上述链接下载完整数据集，并替换这些空白文件。
 
 ## 🚀 快速开始
-1. R (≥ 4.0.0)，RStudio，以及 `tidyverse`、`rmarkdown` 等包
+1. **准备环境**：R (≥ 4.0.0)，RStudio，以及 `tidyverse`、`rmarkdown` 等包
 
 2. **克隆本仓库**
    ```bash
@@ -27,8 +27,7 @@
    ```
 
 3. **下载数据集**
-   - 访问[课程链接](https://www.xiong99.com.cn/p/t_pc/course_pc_detail/image_text/i_5edafde30594b_kkXYFFvK)
-   - 获取数据文件（提取码：`fj0r`）
+   - 访问[课程链接](https://www.xiong99.com.cn/p/t_pc/course_pc_detail/image_text/i_5edafde30594b_kkXYFFvK)以获取数据文件
    - 将下载的数据文件**替换**对应课时文件夹中的空白 `.csv` 文件
 
 4. **运行代码**
@@ -37,11 +36,11 @@
 
 ## 📝 各课时内容概览
 
-- Chapter 1: 线性回归
-- Chapter 2: 方差分析
-- Chapter 3: 逻辑回归
-- Chapter 4: 逻辑回归与定序回归
-- Chapter 5: 泊松回归
+- Chapter 1: 线性回归 [@YHanchao](https://github.com/YHanchao)
+- Chapter 2: 方差分析 [@Xingguo72](https://github.com/Xingguo72)
+- Chapter 3: 逻辑回归 [@YHanchao](https://github.com/YHanchao)
+- Chapter 4: 逻辑回归与定序回归 [@93azhan](https://github.com/93azhan)
+- Chapter 5: 泊松回归 [@Xingguo72](https://github.com/Xingguo72)
 
 ## 💡 使用建议
 
