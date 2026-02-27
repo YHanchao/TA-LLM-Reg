@@ -1,5 +1,5 @@
 ---
-title: "第六次习题课"
+title: "Chapter 3"
 author: "Hanchao Yan"
 date: "2025-03-12"
 output: html_document
