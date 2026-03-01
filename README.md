@@ -54,12 +54,12 @@
 2. 回归分析与数据思维课程讲义
 3. [R for Data Science](https://r4ds.had.co.nz/)
 4. [R Markdown官方文档](https://rmarkdown.rstudio.com/)
-5. [助教课视频链接：大模型辅助的商务数据分析与预测](https://www.xiong99.com.cn/p/t_pc/goods_pc_detail/goods_detail/p_67bfbff5e4b0694ca06ab86c?product_id=p_67bfbff5e4b0694ca06ab86c)
-6. [专栏：ChatGPT辅助的R语言编程](https://www.xiong99.com.cn/p/t_pc/course_pc_detail/column/p_65e93957e4b04c10257bb369?product_id=p_65e93957e4b04c10257bb369)
 
 ## 🔗 相关链接
 
 - [课程教材详情页](https://www.xiong99.com.cn/p/t_pc/course_pc_detail/image_text/i_5edafde30594b_kkXYFFvK)
+- [助教课视频链接：大模型辅助的商务数据分析与预测](https://www.xiong99.com.cn/p/t_pc/goods_pc_detail/goods_detail/p_67bfbff5e4b0694ca06ab86c?product_id=p_67bfbff5e4b0694ca06ab86c)
+- [专栏：ChatGPT辅助的R语言编程](https://www.xiong99.com.cn/p/t_pc/course_pc_detail/column/p_65e93957e4b04c10257bb369?product_id=p_65e93957e4b04c10257bb369)
 
 ## 📄 许可证
 
